@@ -1,6 +1,8 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using RegisterLoginASP.Models.Domain;
+using RegisterLoginASP.Repositories.Abstract;
+using RegisterLoginASP.Repositories.Implementation;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -18,6 +20,8 @@ builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
     .AddDefaultTokenProviders();
 
 builder.Services.ConfigureApplicationCookie(options => options.LoginPath = "/UserAuthentication/Login");
+
+builder.Services.AddScoped<IUserAuthenticationService, UserAuthenticationService>();
 
 var app = builder.Build();
 
