@@ -74,41 +74,41 @@ namespace RegisterLoginASP.Repositories.Implementation
 
         public async Task<Status> RegistrationAsync(RegistrationModel model)
         {
-           var status = new Status();
-           var userExits = await userManager.FindByNameAsync(model.Username);
-           if (userExits != null)
+            var status = new Status();
+            var userExists = await userManager.FindByNameAsync(model.Username);
+            if (userExists != null)
             {
-                status.StatusCode= 0;
-                status.Message = "User Name already exists";
+                status.StatusCode = 0;
+                status.Message = "User already exist";
                 return status;
             }
-            ApplicationUser user = new ApplicationUser
+            ApplicationUser user = new ApplicationUser()
             {
-                SecurityStamp=Guid.NewGuid().ToString(),
-                Name= model.Name,
-                Email=model.Email,
-                UserName=model.Username,
-                EmailConfirmed=true,
+                Email = model.Email,
+                SecurityStamp = Guid.NewGuid().ToString(),
+                UserName = model.Username,
+                EmailConfirmed = true,
+                PhoneNumberConfirmed = true,
             };
-
             var result = await userManager.CreateAsync(user, model.Password);
-            if(result.Succeeded)
+            if (!result.Succeeded)
             {
-                status.StatusCode= 0;
+                status.StatusCode = 0;
                 status.Message = "User creation failed";
                 return status;
             }
-            //role management
+
             if (!await roleManager.RoleExistsAsync(model.Role))
                 await roleManager.CreateAsync(new IdentityRole(model.Role));
 
-            if(await roleManager.RoleExistsAsync(model.Role))
+
+            if (await roleManager.RoleExistsAsync(model.Role))
             {
                 await userManager.AddToRoleAsync(user, model.Role);
             }
 
-            status.StatusCode= 0;
-            status.Message = "Registration successfully";
+            status.StatusCode = 1;
+            status.Message = "You have registered successfully";
             return status;
         }
     }
